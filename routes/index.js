@@ -39,7 +39,7 @@ exports.send_sms = function(req,res){
 
 	http = require('http');
 	var tel = '0689816473';  //req.param.tel
-	var message = req.param.message;
+	var message = req.params.message;
 
 	var options = {
 	  host: '192.168.0.61',
@@ -47,25 +47,33 @@ exports.send_sms = function(req,res){
 	  path: '/sendsms?phone='+tel+'&text='+message+'&password=tedjyx33'
 	};
 
-	http.get(options, function(res) {
-	  console.log("Got response: " + res);
-	  console.log('STATUS: ' + res.statusCode);
-  	  console.log('HEADERS: ' + JSON.stringify(res.headers));
-  	  res.setEncoding('utf8');
-  	  res.on('data', function (chunk) {
-     	 console.log('BODY: ' + chunk);
-  	  });
+	http.get(options, function(reponse) {
+	  
+        if (reponse.statusCode ==200){
+          console.log("Send Sms:  " + Date('d/M/Y h:m'));
+         res.writeHead(200, {'Content-Type': 'text/plain'});
+          res.end('Message envoyé');
+        }
   		}).on('error', function(e) {
-	  console.log("Got error: " + e.message);
+	       console.log("Got error: " + e.message);
+        res.writeHead(200, {'Content-Type': 'text/plain'});
+         res.end('Erreur sms : '.e.message);
 	});
 
 };
+
+
 /**
 *  Activation des relais
 *
 */
-exports.test = function (req,res){
+exports.cde_relai = function (req,res){
   var idRelay = req.params.id;
+  var delai = req.params.delai;
+
+  if (delai == 0 ){
+    delai = 200;
+  }
   var rang = '0X14'; // rangee de relais
 
   if(idRelay >=9){
@@ -81,7 +89,6 @@ exports.test = function (req,res){
 
   execShell("i2cset -y 1 0x20 "+rang+" 0x"+code.toString(16), function (err,content){
         console.log(content);
-
   });
 
    
@@ -89,6 +96,9 @@ exports.test = function (req,res){
       execShell("i2cset -y 1 0x20 "+rang+" 0xFF", function (err,content){
         console.log(content);
       });
-  },2000);
+  },delai);
+
+  res.send({'resultat' : 'ok'});
+  res.end('ok');//
 
 };

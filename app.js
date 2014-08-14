@@ -28,10 +28,23 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+
 app.get('/', routes.index);
-app.get('/vntest/:id', routes.test);
-app.get('/sms', routes.send_sms);
+app.get('/relai/:id/:delai', routes.cde_relai);
+app.get('/sms/:message', routes.send_sms);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+
+//::::::::::::::::   Autres Fonctions  ::::::::::::::::::
+var cronJob = require('cron').CronJob;
+job_ping = new cronJob ({
+	cronTime: '1 * * * * *', 
+	onTick: function(){
+		console.log(' new message ');
+	},
+	start : false
+});
+job_ping.start();
