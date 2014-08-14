@@ -7,7 +7,7 @@ function execShell (myScript,callback){
   var exec = require('child_process').exec;
   var child;
 
-   console.log(' -------- '+myScript);
+   console.log(' exec ==> '+myScript);
   //exec ls
   child = exec(myScript, function (error, stdout, stderr){   // ps aux   - "vnstat -d"
   //sys.print('stdout: '+stdout);
@@ -25,7 +25,6 @@ function execShell (myScript,callback){
 /*
  * GET home page.
  */
-
 exports.index = function(req, res){
   res.render('index', { title: 'Express' });
 };
@@ -37,28 +36,14 @@ exports.index = function(req, res){
 *****************************************/
 exports.send_sms = function(req,res){
 
-	http = require('http');
-	var tel = '0689816473';  //req.param.tel
-	var message = req.params.message;
-
-	var options = {
-	  host: '192.168.0.61',
-	  port: 9090,
-	  path: '/sendsms?phone='+tel+'&text='+message+'&password=tedjyx33'
-	};
-
-	http.get(options, function(reponse) {
-	  
-        if (reponse.statusCode ==200){
-          console.log("Send Sms:  " + Date('d/M/Y h:m'));
-         res.writeHead(200, {'Content-Type': 'text/plain'});
-          res.end('Message envoyé');
-        }
-  		}).on('error', function(e) {
-	       console.log("Got error: " + e.message);
-        res.writeHead(200, {'Content-Type': 'text/plain'});
-         res.end('Erreur sms : '.e.message);
-	});
+	var wlog = require('../routes/wlog');
+  var message = req.params.message
+  console.log(message);
+  
+    wlog.send_htc_sms(message,function(err){
+    res.send({'resultat' : 'ok'});
+    res.end('ok');//
+  });
 
 };
 
@@ -84,19 +69,16 @@ exports.cde_relai = function (req,res){
        idRelay = 1 << (idRelay-1);
   }
 
-  console.log('id => '+idRelay);
   var code = 255 ^ idRelay; 
 
   execShell("i2cset -y 1 0x20 "+rang+" 0x"+code.toString(16), function (err,content){
-        console.log(content);
+        console.log('relai id='+idRelay+' On: '+content);
+        setTimeout(function(){
+          execShell("i2cset -y 1 0x20 "+rang+" 0xFF", function (err,content){
+            console.log('relai id='+idRelay+' Off: '+content);
+          });
+        },delai);
   });
-
-   
-  setTimeout(function(){
-      execShell("i2cset -y 1 0x20 "+rang+" 0xFF", function (err,content){
-        console.log(content);
-      });
-  },delai);
 
   res.send({'resultat' : 'ok'});
   res.end('ok');//
