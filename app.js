@@ -58,7 +58,7 @@ Day of Week: 0-6
 
 var cronJob = require('cron').CronJob;
 job_ping = new cronJob ({
-	cronTime: '30 * * * * *',   // ss mm hh jj MMM JJJ
+	cronTime: '* * 2 * * *',   // ss mm hh jj MMM JJJ
 	onTick: function(){
 			
 
