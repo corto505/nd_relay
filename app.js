@@ -28,10 +28,11 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-
 app.get('/', routes.index);
-app.get('/relai/:id/:delai', routes.cde_relai);
+app.get('/test_ping', routes.test_ping);
+app.get('/relai/:id/:ordre/:delai', routes.cde_relai);
 app.get('/sms/:message', routes.send_sms);
+app.get('/led/:pins/:etat',routes.led); //affichage dune led etat = 0 ou 1
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

@@ -56,7 +56,7 @@ exports.send_htc_sms = function(message,callback){
 };
 
 /**
-* permet d'nvoyer un mail en dehors du serveur web
+* permet d'Envoyer un mail en dehors du serveur web
 *
 */
 exports.send_mail = function (texte){
@@ -72,7 +72,7 @@ exports.send_mail = function (texte){
 
 	var mailOptions = {
 		from: 'Automate <eric.balinfo@gmail.com>',
-		to: 'em14150@free.Fr',
+		to: 'em14150@free.fr',
 		subject: 'Err: Ping serveur',
 		text: 'Le serveur '+texte+' ne répond pas'
 	}
