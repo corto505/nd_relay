@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "express": "3.4.8",
-    "jade": "*"
+    "jade": "*",
+    "node-mcp23017": "0.0.2"
   }
 }

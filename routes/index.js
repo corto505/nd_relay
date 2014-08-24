@@ -88,6 +88,7 @@ exports.cde_relai = function (req,res){
   var delai = req.params.delai;
 
    var rang = '0X14'; // rangee de relais
+   console.log('***** idrelay '+idRelay);
 
   if(idRelay >=9){
       rang = '0X15';
@@ -103,34 +104,90 @@ exports.cde_relai = function (req,res){
     
 
     if (ordre =='Off'){
-         execShell("i2cset -y 1 0x20 "+rang+" 0xFF", function (err,content){
-            console.log('relai id='+idRelay+' Off: '+content);
+            console.log('relai id='+idRelay+' Off: code : '+code);
+            execShell("i2cset -y 1 0x20 "+rang+" 0xFF", function (err,content){
         });
+
     }else{
 
-      execShell("i2cset -y 1 0x20 "+rang+" 0x"+code.toString(16), function (err,content){
-        console.log('relai id='+idRelay+' On: '+content);
+        console.log('relai id='+idRelay+' On: code : '+code);
+        execShell("i2cset -y 1 0x20 "+rang+" 0x"+code.toString(16), function (err,content){
       });
     }
     
 
   }else {
 
-    execShell("i2cset -y 1 0x20 "+rang+" 0x"+code.toString(16), function (err,content){
-        console.log('relai id='+idRelay+' On: '+content);
-        setTimeout(function(){
-          execShell("i2cset -y 1 0x20 "+rang+" 0xFF", function (err,content){
-            console.log('relai id='+idRelay+' Off: '+content);
-          });
-        },delai);
+      console.log('1-------- relai id='+idRelay+' On: code '+code);
+      execShell("i2cset -y 1 0x20 "+rang+" 0x"+code.toString(16), function (err,content){  
+        
   });
 
-  }
- 
+    setTimeout(function(){
+            console.log('2-------- relai id='+idRelay+' Off: code '+code);
+            execShell("i2cset -y 1 0x20 "+rang+" 0xFF", function (err,content){
+          });
+        },delai);
 
-  
+  }
 
   res.send({'resultat' : 'ok'});
   res.end('ok');//
 
 };
+
+//=============   TEST  =======================
+exports.Node_MCP23017_test = function (req,res){
+    var MCP23017 = require('node-mcp23017');
+
+    var mcp = new MCP23017({
+      address: 0x20, //all address pins pulled low
+      device: '/dev/i2c-1', // Model B
+      debug: true
+    });
+
+    /*
+      This function blinks 16 LED, each hooked up to an port of the MCP23017
+    */
+    var pin = 0;
+    var max = 16;
+    var state = false;
+
+    var blink = function() {
+        if (pin >= max) {
+          pin = 0; //reset the pin counter if we reach the end
+        }
+
+        if (state) {
+          mcp.digitalWrite(pin, mcp.LOW); //turn off the current LED
+          pin++; //increase counter
+        } else {
+          mcp.digitalWrite(pin, mcp.HIGH); //turn on the current LED
+          console.log('blinking pin', pin);
+        }
+        state = !state; //invert the state of this LED
+    };
+
+    //define all gpios as outputs
+    for (var i = 0; i < 16; i++) {
+       mcp.pinMode(i, mcp.OUTPUT);
+    }
+
+    setInterval(blink, 100); //blink all LED's with a delay of 100ms
+}
+
+/**
+*  ??? mat ttoute la barette A a ON ??, non voulue
+*/
+exports.mcp23017_test = function (req,res){
+  var MCP23017 = require('mcp23017');
+
+  var address = 0x20;
+  var mcp = new MCP23017(address, '/dev/i2c-1');
+  mcp.allOff();
+
+   mcp.setGpioAPinValue(0,0); //set GPIO A Pin 0 to high
+  mcp.setGpioAPinValue(5,1); //set GPIO A Pin 0 to low
+  //console.log(mcp.getGpioBPinValue(0)); //get GPIO B Pin 0 value
+
+}
