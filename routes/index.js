@@ -77,6 +77,16 @@ exports.led = function (req,res){
   }
 };
 
+exports.init_relai = function (req,res){
+  console.log('Initialisation des relais');
+  execShell("i2cset -y 1 0x20 0X00 0x00", function (err,content){});
+  execShell("i2cset -y 1 0x20 0x01 0x00", function (err,content){});
+  res.header('Access-Control-Allow-Origin', "*") //permet le requete venant d'un autre domaine
+  res.writeHead(200,{"content-Type" : "text/plain"});
+    res.write("OK : requête envoyée");
+    res.end();
+};
+
 
 /**
 *  Activation des relais
@@ -135,6 +145,7 @@ exports.cde_relai = function (req,res){
   res.end('ok');//
 
 };
+
 
 //=============   TEST  =======================
 exports.Node_MCP23017_test = function (req,res){

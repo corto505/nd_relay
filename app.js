@@ -8,7 +8,12 @@ var routes = require('./routes');
 
 var http = require('http');
 var path = require('path');
-
+var allowCrossDomain = function(req,res,nex) {
+	res.header('Access-Control-Allow-Origin', "*");
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+}
 var app = express();
 
 // all environments
@@ -22,6 +27,7 @@ app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(allowCrossDomain);
 
 // development only
 if ('development' == app.get('env')) {
@@ -30,9 +36,12 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/test_ping', routes.test_ping);
+app.get('/init_relai',routes.init_relai);
 app.get('/relai/:id/:ordre/:delai', routes.cde_relai);
 app.get('/sms/:message', routes.send_sms);
 app.get('/led/:pins/:etat',routes.led); //affichage dune led etat = 0 ou 1
+
+
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
@@ -78,7 +87,7 @@ job_ping = new cronJob ({
 				  if (error !== null) {
 					    console.log('!****!  error ping IP : '+ target); 
 					   // wlog.send_mail('erreur Ping '+ targets[i]); // OK mais prefere sms
-					    wlog.send_htc_sms('erreur%2OPing%20'+target,function(err){});
+					    wlog.send_htc_sms('njs_erreur%2OPing%20'+target,function(err){});
 					}else{
 							console.log('  --> Ping '+ target);
 						//wlog.send_htc_sms('test%2OPing%20'+target,function(err){});
