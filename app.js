@@ -43,17 +43,15 @@ app.get('/led/:pins/:etat',routes.led); //affichage dune led etat = 0 ou 1
 
 
 
-http.createServer(app).listen(app.get('port'), function(){
+var httpServeur =  http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
 
 //::::::::::::::::   Autres Fonctions  ::::::::::::::::::
 
-var sys = require('sys');
-var wlog = require('./routes/wlog'); // pour mail et sms
 
-/*
+/*  TEST 
 Seconds: 0-59
 Minutes: 0-59
 Hours: 0-23
@@ -66,6 +64,9 @@ Day of Week: 0-6
     // or Sunday.
 */
 
+
+var sys = require('sys');
+var wlog = require('./routes/wlog'); // pour mail et sms
 var cronJob = require('cron').CronJob;
 job_ping = new cronJob ({
 	cronTime: '* * 2 * * *',   // ss mm hh jj MMM JJJ
@@ -76,6 +77,7 @@ job_ping = new cronJob ({
 		  var exec = require('child_process').exec;
 		  var child;
 		  var targets = ["192.168.0.61","192.168.0.66"];
+		  var h = date.getHours();
 
 		  for (var i = 0; i < targets.length; i++) {
 	  		 //exec ls
@@ -85,11 +87,11 @@ job_ping = new cronJob ({
 				 // sys.print('stdout: '+target);
 				  //sys.print('stderr: ' + stderr);
 				  if (error !== null) {
-					    console.log('!****!  error ping IP : '+ target); 
+					    console.log('!** '+h+' **!  error ping IP : '+ target); 
 					   // wlog.send_mail('erreur Ping '+ targets[i]); // OK mais prefere sms
 					    wlog.send_htc_sms('njs_erreur%2OPing%20'+target,function(err){});
 					}else{
-							console.log('  --> Ping '+ target);
+							console.log(h+' --> Ping '+ target);
 						//wlog.send_htc_sms('test%2OPing%20'+target,function(err){});
 					}
 			  });
@@ -100,3 +102,26 @@ job_ping = new cronJob ({
 });
 job_ping.start();
 
+
+var io = require ('socket.io').listen(httpServeur);
+
+io.sockets.on('connection', function(socket){
+	
+		console.log('io : Nouveau user');
+
+		var date = new Date();
+		var h = date.getHours();
+		if (h<10) { h = "0"+h}
+			var mn = date.getMinutes();
+		if (mn<10) { mn = "0"+mn}
+ 		 	var jj = date.getDay();
+		if (jj<10) { jj = "0"+jj}
+  			var mm = date.getMonth();
+		if (mm<10) { mm = "0"+mm}
+
+		var info =  { heure : h, min : mn };
+		socket.emit('logged'); //envoi un info au user qui vient de se connecter
+        io.sockets.emit('newuser',info);
+		
+
+});
