@@ -33,7 +33,10 @@ exports.index = function(req, res){
 *  Permet de tester le service
 */
 exports.test_ping = function (req,res){
-  res.send({'resultat' : 'ok'});
+/*  for(var i=1 ; i<=8 ; i++){
+    console.log(255-Math.pow(2,i-1));
+  }*/
+  res.send({'resultat -xx ' : 'ok'});
     res.end('ok');//
 }
 
@@ -64,12 +67,16 @@ exports.led = function (req,res){
   var pins = parseInt(req.params.pins);
   var etat = parseInt(req.params.etat);
    
-  if (pins >=0 && pins <=7){
+  if (pins >=0 && pins <=24){
       gpio.open(pins,"output", function(err){
         gpio.write(pins,etat,function(){
-          console.log('commande envoyée :'+etat);
+          console.log('commande envoyée :'+pins+'='+etat);
           gpio.close(pins);
         });
+
+        execShell("gpio write 1 "+etat, function (err,content){
+        });
+
       });
       res.send('requete envoyée');
   }else{
@@ -104,11 +111,14 @@ exports.cde_relai = function (req,res){
       rang = '0X15';
       idRelay = idRelay - 8;
   }
-  if (idRelay > 1){
+  /*if (idRelay > 1){
        idRelay = 1 << (idRelay-1);
   }
-
-  var code = 255 ^ idRelay; 
+*/
+  var code = 255-Math.pow(2,idRelay-1)//255 ^ idRelay; 
+  console.log("Irelay " + idRelay);
+  console.log("rang " + rang);
+  console.log("code " + code);
 
   if (delai == 0 ){ // odre classique On/Off
     
