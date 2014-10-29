@@ -60,24 +60,22 @@ exports.send_sms = function(req,res){
 
 /**
  *  gestion de led viad http
- *
+ * 29/9/14 : Modification proc, pi-gpio ne fonctionne plus
+ * on passe maintenant direct par cde shell
  ***/
 exports.led = function (req,res){
   var gpio = require ("pi-gpio");
   var pins = parseInt(req.params.pins);
   var etat = parseInt(req.params.etat);
-   
+
+
   if (pins >=0 && pins <=24){
-      gpio.open(pins,"output", function(err){
-        gpio.write(pins,etat,function(){
-          console.log('commande envoyée :'+pins+'='+etat);
-          gpio.close(pins);
+    
+        execShell("gpio mode "+pins+ " out", function (err,content){
+        });
+          execShell("gpio write "+pins+" "+etat, function (err,content){
         });
 
-        execShell("gpio write 1 "+etat, function (err,content){
-        });
-
-      });
       res.send('requete envoyée');
   }else{
       res.send('!**!  erreur : Num GPIO : '+pins);
@@ -155,6 +153,109 @@ exports.cde_relai = function (req,res){
   res.end('ok');//
 
 };
+
+//===========  GESTION COD ACCES  ========
+
+//************************
+// code_create : creation d'un code de controle
+//************************
+exports.code_create = function(req,res){
+
+    random = require("random");
+    var cde = req.params.cde;
+
+    function randomCallback(integers){
+
+        // creation du code
+        var nbre = integers[0][0];
+        console.log(nbre);
+
+        var start = new Date().getTime(); // creation du temps de depart
+
+       //  var elapsed = new Date().getTime() - start;
+       
+       //creation de l'uid
+       var uid = require("gen-uid");
+       var cliUid = uid.token();
+
+       var myObject = {
+          'resultat' : nbre,
+           'temps': start,
+           'uid': cliUid,
+           'code': nbre,
+           'cde': cde
+         };
+        console.log(myObject);
+
+       // ecrire le fichier json
+       var fs = require('fs');
+       fs.writeFileSync("./public/json/"+cliUid+"_"+cde+".json", JSON.stringify(myObject),"UTF-8");
+
+        res.send(myObject);
+        res.end('ok');//
+
+    }
+
+
+    var options = {
+        secure: true,
+        num: 1,
+        min: 1000,
+        max: 9999
+    };
+    function errorCallback(type,code,string){
+        console.log("RANDOM.ORG Error: Type: "+type+", Status Code: "+code+", Response Data: "+string);
+    }
+
+     random.generateIntegers(randomCallback,options,errorCallback);
+     
+    
+}
+
+/**
+ * [code_verif verification du code genéré]
+ * @param  {[varchar]} req.uid [token]
+ * @param  {[varchar]} req.cde [cde domotic]
+ * @param  {[integer]} res.code [code saisie par le user]
+ * @return {[bool]}     [si verif ok]
+ */
+exports.code_verif = function(req,res){
+
+  var myfile = require("./myfile")
+  var uidCLi = req.params.uid;
+  var cdeCli = req.params.cde;
+  var codeCli = req.params.code;
+
+  var $file = uidCLi+"_"+cdeCli+".json"
+  var start = new Date().getTime(); // creation du temps de depart
+  var tpsMax = 60*60*1000*5 ; // = 5mn
+
+  //lecture du ficier pour recup des infos
+ myfile.readContent("./public/json/"+$file,function(err,contentJson){
+      console.log('fin lecture'); 
+      var objVal = JSON.parse(contentJson);
+
+      if ( (start - objVal.temps) <= tpsMax){
+          console.log('le temps es ok'); 
+          if(codeCli == objVal.code){
+               res.send ('Test ok '+objVal.uid);
+          
+          }else{
+              console.log('Erreur sur le code'); 
+
+          }
+
+      }else{
+          console.log('Erreur sur le temps:'+  objVal.temps); 
+
+      }
+
+      res.end();//
+
+  });
+            
+
+}
 
 
 //=============   TEST  =======================

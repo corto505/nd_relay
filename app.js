@@ -40,6 +40,8 @@ app.get('/init_relai',routes.init_relai);
 app.get('/relai/:id/:ordre/:delai', routes.cde_relai);
 app.get('/sms/:message', routes.send_sms);
 app.get('/led/:pins/:etat',routes.led); //affichage dune led etat = 0 ou 1
+app.get('/code/:cde',routes.code_create); //Creation d'un code de controle
+app.get('/code/verif/:uid/:cde/:code',routes.code_verif); //Creation d'un code de controle
 
 
 
@@ -77,7 +79,7 @@ job_ping = new cronJob ({
 		  var exec = require('child_process').exec;
 		  var child;
 		  var targets = ["192.168.0.61","192.168.0.66"];
-		  var h = date.getHours();
+		  var h = Date.getHours();
 
 		  for (var i = 0; i < targets.length; i++) {
 	  		 //exec ls

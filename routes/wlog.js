@@ -36,7 +36,7 @@ exports.send_htc_sms = function(message,callback){
 	//var message = req.params.message;
 
 	var options = {
-	  host: '192.168.0.61',
+	  host: '192.168.0.102',
 	  port: 9090,
 	  path: '/sendsms?phone='+tel+'&text='+message+'&password=tedjyx33'
 	};
@@ -50,7 +50,7 @@ exports.send_htc_sms = function(message,callback){
         }
   		}).on('error', function(e) {
 	       console.log("Got error: " + e.message);
-	       return callback(err);
+	       return callback(e);
 	});
 
 };

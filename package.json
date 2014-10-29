@@ -8,6 +8,15 @@
   "dependencies": {
     "express": "3.4.8",
     "jade": "*",
-    "node-mcp23017": "0.0.2"
+    "node-mcp23017": "0.0.2",
+    "cors": "",
+    "cron": "1.0.0",
+    "mcp23017":"0.0.1",
+    "nodemailer": "1.1.1",
+    "pi-gpio": "0.0.6",
+    "socket.io": "1.1.0",
+    "time": "0.11.0",
+    "random": "0.0.2",
+    "gen-uid": "0.0.2"
   }
 }
