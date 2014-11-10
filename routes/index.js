@@ -1,4 +1,6 @@
 
+var toolfile = require ('../routes/toolfile'); // module perso lecture d'un fichier
+
 /***
 *  Test exec script shell avec retour page html
 */
@@ -259,6 +261,27 @@ exports.code_verif = function(req,res){
 
 
 //=============   TEST  =======================
+
+/**************************
+* Affiche les boutons du tableau de bord
+* à partir d'un fichier /public/json => Traite par ANGULAR
+*  routes  = /tdb
+***************************/
+exports.lireBtnTdb = function(req,res){
+  var config = require('./config.js').settings;
+  var myFile = config.files.fileTdb;
+  
+  toolfile.readContent(myFile, function(err,content){
+  
+    lesBtn = JSON.parse(content);
+    console.log(' Boutton => '+lesBtn);
+    
+    res.json(lesBtn);   
+  });
+  
+}
+
+
 exports.Node_MCP23017_test = function (req,res){
     var MCP23017 = require('node-mcp23017');
 

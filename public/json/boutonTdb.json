@@ -1,0 +1,20 @@
+[
+    {
+        "nom" : "Modules",
+        "url" : "/piece/all",
+        "icone" : "thermo.jpg",
+        "detail" : "liste modules"
+    },
+    {
+        "nom" : "Domoticz",
+        "url" : "http://192.168.0.66:8080/",
+        "icone" : "domoticz.jpg",
+        "detail" : "acc&eaccute;s serveur"
+    },
+    {
+        "nom" : "Monitoring",
+        "url" : "/vnstat/x",
+        "icone" : "monitor.jpg",
+        "detail"  : "raspberry"
+    }
+]

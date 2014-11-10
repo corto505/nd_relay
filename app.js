@@ -8,8 +8,8 @@ var routes = require('./routes');
 
 var http = require('http');
 var path = require('path');
-var allowCrossDomain = function(req,res,nex) {
-	res.header('Access-Control-Allow-Origin', "*");
+var allowCrossDomain = function(req,res,next) {
+    res.header('Access-Control-Allow-Origin', "*");
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     next();
@@ -20,6 +20,8 @@ var app = express();
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+app.use(allowCrossDomain);
+
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
@@ -27,7 +29,6 @@ app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(allowCrossDomain);
 
 // development only
 if ('development' == app.get('env')) {
@@ -42,7 +43,7 @@ app.get('/sms/:message', routes.send_sms);
 app.get('/led/:pins/:etat',routes.led); //affichage dune led etat = 0 ou 1
 app.get('/code/:cde',routes.code_create); //Creation d'un code de controle
 app.get('/code/verif/:uid/:cde/:code',routes.code_verif); //Creation d'un code de controle
-
+app.get("/test_json",routes.lireBtnTdb); // retourne un fichier json
 
 
 var httpServeur =  http.createServer(app).listen(app.get('port'), function(){
