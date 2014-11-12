@@ -151,7 +151,7 @@ exports.cde_relai = function (req,res){
 
   }
 
-  res.send({'resultat' : 'ok'});
+  //res.send({'resultat' : 'ok'});
   res.end('ok');//
 
 };

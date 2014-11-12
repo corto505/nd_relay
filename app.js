@@ -5,6 +5,7 @@
 
 var express = require('express');
 var routes = require('./routes');
+var domoticz = require('./routes/domoticz');
 
 var http = require('http');
 var path = require('path');
@@ -35,6 +36,7 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+//=======   ROUTES  INDEX.PHP  ===========
 app.get('/', routes.index);
 app.get('/test_ping', routes.test_ping);
 app.get('/init_relai',routes.init_relai);
@@ -44,6 +46,15 @@ app.get('/led/:pins/:etat',routes.led); //affichage dune led etat = 0 ou 1
 app.get('/code/:cde',routes.code_create); //Creation d'un code de controle
 app.get('/code/verif/:uid/:cde/:code',routes.code_verif); //Creation d'un code de controle
 app.get("/test_json",routes.lireBtnTdb); // retourne un fichier json
+
+//=========  ROUTES DOMOTICZ  =============
+app.get('/devices',domoticz.index); // menu accueil + thermo
+app.get('/devices/listeinter',domoticz.listeinter); // menu accueil + thermo
+app.get('/devices/update',domoticz.updatedevices); // crer un fichier spécifique json
+app.get('/devices/dump',domoticz.dumpdevices); // creer un fichier json via Domoticz
+
+app.get('/devices/file',domoticz.lirefiledevices); //en attente
+app.get('/devices/sendcde/:idx/:cde',domoticz.send_cde); //envoi d'une commande a domoticz
 
 
 var httpServeur =  http.createServer(app).listen(app.get('port'), function(){
