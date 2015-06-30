@@ -79,6 +79,7 @@ Day of Week: 0-6
 */
 
 
+/**
 var sys = require('sys');
 var wlog = require('./routes/wlog'); // pour mail et sms
 var cronJob = require('cron').CronJob;
@@ -86,12 +87,12 @@ job_ping = new cronJob ({
 	cronTime: '* * 2 * * *',   // ss mm hh jj MMM JJJ
 	onTick: function(){
 			
-
+		  var madate = new Date();
 		  console.log('==> Ping : '+Date());
 		  var exec = require('child_process').exec;
 		  var child;
 		  var targets = ["192.168.0.61","192.168.0.66"];
-		  var h = Date.getHours();
+		  var h = madate.getHours();
 
 		  for (var i = 0; i < targets.length; i++) {
 	  		 //exec ls
@@ -115,7 +116,7 @@ job_ping = new cronJob ({
 	start : false
 });
 job_ping.start();
-
+*/
 
 var io = require ('socket.io').listen(httpServeur);
 

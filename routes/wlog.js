@@ -19,10 +19,12 @@
   
 	console.log ('-  '+h+':'+mn+' ecriture dans le log');
 
+	/**
 	fs.appendFile(myLog,jj+'/'+mm+'/'+date.getFullYear()+' '+h+':'+mn+' => '+mess+'\n',function (err){
 		if (err) return callback(err);
 		callback(null);
 	});
+	*/
 };
 
 /*****************************************
@@ -36,7 +38,7 @@ exports.send_htc_sms = function(message,callback){
 	//var message = req.params.message;
 
 	var options = {
-	  host: '192.168.0.100',
+	  host: '192.168.0.102',
 	  port: 9090,
 	  path: '/sendsms?phone='+tel+'&text='+message+'&password=tedjyx33'
 	};
